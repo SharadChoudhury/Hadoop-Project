@@ -1,0 +1,117 @@
+The data set for the assignment can be downloaded from these links:
+https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-01.csv
+https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
+https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-03.csv
+https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-04.csv
+https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-05.csv
+https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-06.csv
+
+input data is for the year 2017.
+
+
+
+Steps:
+
+1. Create an EMR instance m4.xlarge with 50GB storage and following services:
+    Hadoop
+    HBase
+    Sqoop
+
+2. Create a RDS instance:
+    Database Name: demoDB
+    User: admin
+    Password: 123
+
+3. set up a connection between RDS instance and EC2
+
+4. Connect to RDS from your EMR instance using command:
+    mysql -h demodb.cqsesz6h9yjg.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+
+5.  show databases; 
+    create database nyctaxi; 
+    use nyctaxi;
+
+6. Create table schema in RDS
+create table taxi_2017 (
+    VendorID int PRIMARY KEY,
+    pickup_time DATETIME,
+    dropoff_time DATETIME,
+    passenger_count int,
+    trip_distance float,
+    RateCodeID int,
+    store_and_fwd_flag varchar(1),
+    PULocationID int,
+    DOLocationID int,
+    payment_type int,
+    fare_amount float,
+    extra float,
+    mta_tax float,
+    tip_amount float, 
+    tolls_amount float, 
+    improvement_surcharge float, 
+    total_amount float, 
+    congestion_surcharge float,
+    airport_fee float
+);
+show tables;
+
+7. Download the dataset in EMR
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-01.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
+
+8. Connect to RDS : mysql -h demodb.cqsesz6h9yjg.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+
+9. Load the data in RDS table from the downloaded data.
+    use nyctaxi;
+
+    LOAD DATA LOCAL INFILE '/home/hadoop/<file_path>' 
+    INTO TABLE taxi_2017
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n' 
+    IGNORE 1 LINES;
+
+
+10. try a few commands to make sure that your tables have indeed been loaded
+select * from taxi_2017 limit 5;
+select COUNT(*) from taxi_2017;
+Validate this count with the original csv file in your instance: 
+    wc -l <file.csv>
+
+
+11. Ingest data from RDS to HBase using Sqoop
+    CREATE 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
+
+    trip_info : 
+        VendorID int PRIMARY KEY,
+        pickup_time DATETIME,
+        dropoff_time DATETIME,
+        passenger_count int,
+        trip_distance float,
+        RateCodeID int,
+        store_and_fwd_flag varchar(1),
+        PULocationID int,
+        DOLocationID int,
+        payment_type int,
+    fare_info : 
+        fare_amount float,
+        extra float,
+        mta_tax float,
+        tip_amount float, 
+        tolls_amount float, 
+        improvement_surcharge float, 
+        total_amount float, 
+        congestion_surcharge float,
+        airport_fee float
+
+    sqoop import \
+    --connect jdbc:mysql://your_rds_endpoint:your_rds_port/your_database_name \
+    --username your_rds_username \
+    --password-file /path/to/your/password/file \
+    --table your_rds_table_name \
+    --hbase-table your_hbase_table_name \
+    --column-family your_hbase_column_family \
+    --hbase-row-key your_hbase_row_key_column \
+    --hbase-create-table \
+    --hbase-bulkload
+
+
