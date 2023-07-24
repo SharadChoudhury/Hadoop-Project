@@ -17,6 +17,7 @@ Steps:
     HBase
     Sqoop
 
+Task 1.
 2. Create a RDS instance:
     Database Name: demoDB
     User: admin
@@ -69,7 +70,7 @@ wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n' 
     IGNORE 1 LINES;
-
+do it twice for yellow_tripdata_2017-01.csv and yellow_tripdata_2017-02.csv
 
 10. try a few commands to make sure that your tables have indeed been loaded
 select * from taxi_2017 limit 5;
@@ -78,10 +79,11 @@ Validate this count with the original csv file in your instance:
     wc -l <file.csv>
 
 
+Task 2.
 11. Ingest data from RDS to HBase using Sqoop
     CREATE 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
 
-    trip_info : 
+    trip_info : (10 cols)
         VendorID int PRIMARY KEY,
         pickup_time DATETIME,
         dropoff_time DATETIME,
@@ -91,8 +93,9 @@ Validate this count with the original csv file in your instance:
         store_and_fwd_flag varchar(1),
         PULocationID int,
         DOLocationID int,
-        payment_type int,
-    fare_info : 
+        payment_type int
+        
+    fare_info : (9 cols)
         fare_amount float,
         extra float,
         mta_tax float,
@@ -103,15 +106,37 @@ Validate this count with the original csv file in your instance:
         congestion_surcharge float,
         airport_fee float
 
-    sqoop import \
-    --connect jdbc:mysql://your_rds_endpoint:your_rds_port/your_database_name \
-    --username your_rds_username \
-    --password-file /path/to/your/password/file \
-    --table your_rds_table_name \
-    --hbase-table your_hbase_table_name \
-    --column-family your_hbase_column_family \
-    --hbase-row-key your_hbase_row_key_column \
-    --hbase-create-table \
-    --hbase-bulkload
+sqoop import \
+--connect jdbc:mysql://your_rds_endpoint:your_rds_port/your_database_name \
+--username your_rds_username \
+--password-file /path/to/your/password.txt \
+--table your_rds_table_name \
+--columns "VendorID,pickup_time,dropoff_time,passenger_count,trip_distance,RateCodeID,store_and_fwd_flag,PULocationID,DOLocationID,payment_type" \
+--hbase-table taxi_data \
+--column-family trip_info \
+--hbase-row-key VendorID \
+--hbase-create-table \
+--hbase-bulkload
+
+sqoop import \
+  --connect jdbc:mysql://your_rds_endpoint:your_rds_port/your_database_name \
+  --username your_rds_username \
+  --password-file /path/to/your/password.txt \
+  --table your_rds_table_name \
+  --columns "fare_amount, extra, mta_tax, tip_amount, tolls_amount, improvement_surcharge, total_amount, congestion_surcharge, airport_fee" \
+  --hbase-table taxi_data \
+  --column-family fare_info \
+  --hbase-row-key VendorID \
+  --hbase-create-table \
+  --hbase-bulkload
 
 
+
+
+Task 3.
+Bulk import data from next two files in the dataset on your EMR cluster to your HBase Table using the relevant happybase codes.
+Note: For the above task 3, you just need to import data from the subsequent 2 csv files (i.e. yellow_tripdata_2017-03.csv
+& yellow_tripdata_2017-04.csv) on your EMR cluster.
+
+Task 4. 
+MapReduce Tasks:
