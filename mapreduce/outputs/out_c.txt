@@ -1,0 +1,4 @@
+"Payment type"	"Counts"
+1	97
+2	99
+3	3
