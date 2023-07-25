@@ -72,6 +72,7 @@ wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
     IGNORE 1 LINES;
 do it twice for yellow_tripdata_2017-01.csv and yellow_tripdata_2017-02.csv
 
+
 10. try a few commands to make sure that your tables have indeed been loaded
 select * from taxi_2017 limit 5;
 select COUNT(*) from taxi_2017;
@@ -130,7 +131,7 @@ sqoop import \
   --hbase-create-table \
   --hbase-bulkload
 
-
+# Implement null handling accordingly in the sqoop commands
 
 
 Task 3.
