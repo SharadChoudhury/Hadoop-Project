@@ -140,4 +140,4 @@ Note: For the above task 3, you just need to import data from the subsequent 2 c
 & yellow_tripdata_2017-04.csv) on your EMR cluster.
 
 Task 4. 
-MapReduce Tasks:
+MapReduce Tasks: task_a to task_f

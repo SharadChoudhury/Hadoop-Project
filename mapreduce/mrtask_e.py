@@ -16,7 +16,7 @@ class mapreduce(MRJob):
         if vals[0] != 'VendorID':
             puloc = vals[7]
             tip = float(vals[13])
-            rev = float(vals[16])
+            rev = float(vals[10])
             yield puloc,(tip, rev)
 
 

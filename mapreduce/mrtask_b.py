@@ -14,7 +14,7 @@ class mapreduce(MRJob):
         vals = value.strip().split(',')
         if vals[0] != 'VendorID':
             puloc = vals[7]
-            rev = float(vals[16])
+            rev = float(vals[10])
             yield puloc,rev
 
 

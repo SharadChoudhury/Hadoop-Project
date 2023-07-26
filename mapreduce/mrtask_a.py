@@ -16,7 +16,7 @@ class mapReduce(MRJob):
         vals = line.strip().split(',')
         vendor_id = vals[0]
         if vendor_id != 'VendorID':
-            revenue = float(vals[16])
+            revenue = float(vals[10])
             yield vendor_id, (1, revenue)
 
 
