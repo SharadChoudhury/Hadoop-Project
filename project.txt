@@ -70,6 +70,7 @@ wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n' 
     IGNORE 1 LINES;
+
 do it twice for yellow_tripdata_2017-01.csv and yellow_tripdata_2017-02.csv
 
 
@@ -82,6 +83,7 @@ Validate this count with the original csv file in your instance:
 
 Task 2.
 11. Ingest data from RDS to HBase using Sqoop
+In HBase shell:
     CREATE 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
 
     trip_info : (10 cols)
@@ -139,5 +141,26 @@ Bulk import data from next two files in the dataset on your EMR cluster to your 
 Note: For the above task 3, you just need to import data from the subsequent 2 csv files (i.e. yellow_tripdata_2017-03.csv
 & yellow_tripdata_2017-04.csv) on your EMR cluster.
 
+
 Task 4. 
 MapReduce Tasks: task_a to task_f
+
+
+
+Upload a ZIP file containing the following:
+
+Document-01: A PDF document (RDS.pdf) containing the codes, with the explanations, used for 
+loading the datasets mentioned into an AWS RDS instance. This should have the code along with 
+the screenshots of the EMR instance showing the table creation.
+
+Document-02: A PDF document (Ingestiontask.pdf) containing the code to create the HBase table. 
+The file should also include the Sqoop command to ingest data from RDS into the HBase table. 
+The document should be well commented explaining the code.
+
+The Python code (batch_ingest.py) used to ingest the batch data to the HBase table.
+
+The Python codes used for the MapReduce tasks. The files should be labelled as mrtask_a.py, 
+mrtask_b.py, and so on based on the relevant question number. This scripts should also contain the 
+relevant and proper comments, explaining all the steps taken. 
+Answers to the query and the screenshots of the results of the MapReduce tasks must be 
+included in a separate document (MapReducetasks.pdf) in sequence.
