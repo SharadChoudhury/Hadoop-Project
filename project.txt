@@ -136,13 +136,13 @@ sqoop import \
 # Implement null handling accordingly in the sqoop commands
 
 
-Task 3.
+Task 3. Install Happybase in EMR
 Bulk import data from next two files in the dataset on your EMR cluster to your HBase Table using the relevant happybase codes.
 Note: For the above task 3, you just need to import data from the subsequent 2 csv files (i.e. yellow_tripdata_2017-03.csv
 & yellow_tripdata_2017-04.csv) on your EMR cluster.
 
 
-Task 4. 
+Task 4. Install MRJob in EMR : pip install mrjob
 MapReduce Tasks: task_a to task_f
 
 
