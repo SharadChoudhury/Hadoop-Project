@@ -21,7 +21,7 @@ Task 1.
 2. Create a RDS instance:
     Database Name: project1db
     User: admin
-    Password: sharad_123
+    Password: project123
 
 3. set up a connection between RDS instance and EC2
 
@@ -74,6 +74,7 @@ wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
 
 do it also for yellow_tripdata_2017-02.csv
 
+# If any warnings in mysql shell, use command  " show warnings; " immediately after running the query that had warnings
 
 10. try a few commands to make sure that your tables have indeed been loaded
 select * from taxi_2017 limit 5;
@@ -112,10 +113,10 @@ In HBase shell:
         airport_fee float
 
 sqoop import \
---connect jdbc:mysql://your_rds_endpoint:your_rds_port/your_database_name \
---username your_rds_username \
---password-file /path/to/your/password.txt \
---table your_rds_table_name \
+--connect jdbc:mysql://your_rds_endpoint:your_rds_port/nyctaxi \
+--username admin \
+--password project123 \
+--table taxi_2017 \
 --columns "VendorID,pickup_time,dropoff_time,passenger_count,trip_distance,RateCodeID,store_and_fwd_flag,PULocationID,DOLocationID,payment_type" \
 --hbase-table taxi_data \
 --column-family trip_info \
@@ -123,16 +124,16 @@ sqoop import \
 --hbase-create-table \
 --hbase-bulkload
 
+
 sqoop import \
-  --connect jdbc:mysql://your_rds_endpoint:your_rds_port/your_database_name \
-  --username your_rds_username \
-  --password-file /path/to/your/password.txt \
-  --table your_rds_table_name \
+  --connect jdbc:mysql://your_rds_endpoint:your_rds_port/nyctaxi \
+  --username admin \
+  --password project123 \
+  --table taxi_2017 \
   --columns "fare_amount, extra, mta_tax, tip_amount, tolls_amount, improvement_surcharge, total_amount, congestion_surcharge, airport_fee" \
   --hbase-table taxi_data \
   --column-family fare_info \
   --hbase-row-key id \
-  --hbase-create-table \
   --hbase-bulkload
 
 # Implement null handling accordingly in the sqoop commands
@@ -170,7 +171,8 @@ included in a separate document (MapReducetasks.pdf) in sequence.
 
 
 # optional dashboard task
-Export results of mapreduce tasks from bdfs to rds
+Export results of mapreduce tasks from hdfs to rds : Do this for mr tasks c,d,e,f
+
 sqoop export \
   --connect jdbc:mysql://<RDS_ENDPOINT>:<RDS_PORT>/<DB_NAME> \
   --username <RDS_USERNAME> \
