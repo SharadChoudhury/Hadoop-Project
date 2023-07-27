@@ -8,11 +8,11 @@ class mapreduce(MRJob):
 
     def mapper(self, key, value):
         vals = value.strip().split(',')
-        if vals[0] != 'VendorID':
-            puloc = vals[7]
+        if vals[0] != 'id':
+            puloc = vals[8]
             fmt = "%Y-%m-%d %H:%M:%S"
-            picktime = datetime.strptime(vals[1], fmt)
-            droptime = datetime.strptime(vals[2], fmt)
+            picktime = datetime.strptime(vals[2], fmt)
+            droptime = datetime.strptime(vals[3], fmt)
             tripmins = int((droptime - picktime).total_seconds() // 60)
             yield puloc,(tripmins, 1)
 

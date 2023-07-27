@@ -11,8 +11,8 @@ class mapreduce(MRJob):
 
     def mapper(self, key, line):
         vals = line.strip().split(',')
-        if vals[0] != 'VendorID':
-            paymenttype = int(vals[9])
+        if vals[0] != 'id':
+            paymenttype = int(vals[10])
             yield paymenttype,1
 
 

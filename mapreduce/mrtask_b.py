@@ -12,9 +12,9 @@ class mapreduce(MRJob):
 
     def mapper(self, key, value):
         vals = value.strip().split(',')
-        if vals[0] != 'VendorID':
-            puloc = vals[7]
-            rev = float(vals[10])
+        if vals[0] != 'id':
+            puloc = vals[8]
+            rev = float(vals[11])
             yield puloc,rev
 
 

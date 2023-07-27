@@ -23,9 +23,9 @@ class mapReduce(MRJob):
 
     def mapper(self, _, line):
         vals = line.strip().split(',')
-        vendor_id = vals[0]
-        if vendor_id != 'VendorID':
-            revenue = float(vals[10])
+        vendor_id = vals[1]
+        if vendor_id != 'VendorID':  # skipping the header row
+            revenue = float(vals[11])
             yield vendor_id, (1, revenue)
 
 

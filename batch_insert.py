@@ -36,9 +36,9 @@ def batch_insert_data(filename):
         for line in file:
             if i!=0:
                 temp = line.strip().split(",")
-                for j in range(1,10):
+                for j in range(1,11):
                     b.put(temp[0], {'trip_info:'+ cols[j] :temp[j] })
-                for k in range(10,19):
+                for k in range(11,20):
                     b.put(temp[0], {'fare_info:'+ cols[k] :temp[k] })
             else:
                 cols = line.strip().split(",")
