@@ -31,7 +31,7 @@ class mapreduce(MRJob):
 
     def sorted_ratios(self, key, values):
         values = sorted(values)
-        yield "Pickup location ", " Tip to revenue ratio "
+        yield "Pickup location", "Tip to revenue ratio"
         for ratio,loc in values:
             yield loc, round(ratio,2)
 

@@ -24,8 +24,8 @@ class mapreduce(MRJob):
 
     def max_revenue(self, key, values):
         maxval = max(values, key=lambda x : x[0])
-        yield "Pickup location with highest revenue: ", maxval[1]
-        yield "Revenue : ", maxval[0]
+        yield "Pickup location with highest revenue", maxval[1]
+        yield "Revenue", maxval[0]
 
 
 if __name__ == "__main__":

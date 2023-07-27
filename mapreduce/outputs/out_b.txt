@@ -1,2 +1,2 @@
-"Pickup location with highest revenue: "	"132"
-"Revenue : "	259.49
+"Pickup location with highest revenue"	"132"
+"Revenue"	203.5

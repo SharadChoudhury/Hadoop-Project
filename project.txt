@@ -19,9 +19,9 @@ Steps:
 
 Task 1.
 2. Create a RDS instance:
-    Database Name: demoDB
+    Database Name: project1db
     User: admin
-    Password: 123
+    Password: sharad_123
 
 3. set up a connection between RDS instance and EC2
 
@@ -34,7 +34,7 @@ Task 1.
 
 6. Create table schema in RDS
 create table taxi_2017 (
-    VendorID int PRIMARY KEY,
+    VendorID int ,
     pickup_time DATETIME,
     dropoff_time DATETIME,
     passenger_count int,
@@ -65,7 +65,7 @@ wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
 9. Load the data in RDS table from the downloaded data.
     use nyctaxi;
 
-    LOAD DATA LOCAL INFILE '/home/hadoop/<file_path>' 
+    LOAD DATA LOCAL INFILE '/home/hadoop/test1.csv'
     INTO TABLE taxi_2017
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n' 
@@ -87,7 +87,7 @@ In HBase shell:
     CREATE 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
 
     trip_info : (10 cols)
-        VendorID int PRIMARY KEY,
+        VendorID int,
         pickup_time DATETIME,
         dropoff_time DATETIME,
         passenger_count int,
@@ -143,8 +143,9 @@ Note: For the above task 3, you just need to import data from the subsequent 2 c
 
 
 Task 4. Install MRJob in EMR : pip install mrjob
+Use Hadoop runner as file size is large
 MapReduce Tasks: task_a to task_f
-
+Use all locally downloaded files as input
 
 
 Upload a ZIP file containing the following:
@@ -164,3 +165,14 @@ mrtask_b.py, and so on based on the relevant question number. This scripts shoul
 relevant and proper comments, explaining all the steps taken. 
 Answers to the query and the screenshots of the results of the MapReduce tasks must be 
 included in a separate document (MapReducetasks.pdf) in sequence.
+
+
+# optional dashboard task
+Export results of mapreduce tasks from bdfs to rds
+sqoop export \
+  --connect jdbc:mysql://<RDS_ENDPOINT>:<RDS_PORT>/<DB_NAME> \
+  --username <RDS_USERNAME> \
+  --password <RDS_PASSWORD> \
+  --table <TABLE_NAME> \
+  --export-dir <HDFS_DIRECTORY_PATH> \
+  --input-fields-terminated-by '\t'

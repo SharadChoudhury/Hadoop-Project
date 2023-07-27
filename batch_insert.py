@@ -32,7 +32,7 @@ def batch_insert_data(filename):
     i= 0
     cols = []
 
-    with table.batch(batch_size=2) as b:
+    with table.batch(batch_size=1000) as b:
         for line in file:
             if i!=0:
                 temp = line.strip().split(",")
