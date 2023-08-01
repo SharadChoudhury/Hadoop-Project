@@ -50,5 +50,5 @@ def batch_insert_data(filename):
 
 
 # insert batch data from march.csv and april.csv
-batch_insert_data('march.csv')
-batch_insert_data('april.csv')
+batch_insert_data('mar.csv')
+batch_insert_data('apr.csv')

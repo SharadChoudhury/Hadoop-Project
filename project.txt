@@ -1,10 +1,17 @@
 The data set for the assignment can be downloaded from these links:
-https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-01.csv
-https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
-https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-03.csv
-https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-04.csv
-https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-05.csv
-https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-06.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-01.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-03.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-04.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-05.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-06.csv
+
+mv yellow_tripdata_2017-01.csv jan.csv
+mv yellow_tripdata_2017-02.csv feb.csv
+mv yellow_tripdata_2017-03.csv mar.csv
+mv yellow_tripdata_2017-04.csv apr.csv
+mv yellow_tripdata_2017-05.csv may.csv
+mv yellow_tripdata_2017-06.csv jun.csv
 
 input data is for the year 2017.
 
@@ -28,8 +35,6 @@ Task 1.
 3. set up a connection between RDS instance and EC2
 
 4. Download the dataset in EMR
-wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-01.csv
-wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
 - mv yellow_tripdata_2017-01.csv jan.csv
 - mv yellow_tripdata_2017-02.csv feb.csv
 
@@ -82,7 +87,8 @@ do it also for feb.csv
 select * from taxi_2017 limit 5;
 select COUNT(*) from taxi_2017;
 Validate this count with the original csv file in your instance: 
-    wc -l <file.csv>
+    wc -l jan.csv
+    wc -l feb.csv
 
 
 
@@ -152,23 +158,27 @@ Note: For the above task 3, you just need to import data from the subsequent 2 c
 
 - mkdir hbase
 - cd hbase
-- wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-03.csv
-- wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-04.csv
-- mv yellow_tripdata_2017-03.csv march.csv
-- mv yellow_tripdata_2017-04.csv april.csv
+- mv /home/hadoop/mar.csv .
+- mv /home/hadoop/apr.csv .
 - vi batch_insert.py
 - Run the batch_insert.py in /home/hadoop/hbase
 
 
+
 Task 4. Install MRJob in EMR : 
 - pip install mrjob
-- mv /home/hadoop/{jan.csv,feb.csv} /home/hadoop/mrtasks/input
-- mv /home/hadoop/hbase/{march.csv,april.csv} /home/hadoop/mrtasks/input
+
+Use all locally downloaded files as input
+- mv /home/hadoop/* /home/hadoop/mrtasks/input
+
 Use Hadoop runner as file size is large
 MapReduce Tasks: task_a to task_f
-Use all locally downloaded files as input
 
 
+
+
+
+Submission:
 Upload a ZIP file containing the following:
 
 Document-01: A PDF document (RDS.pdf) containing the codes, with the explanations, used for 
