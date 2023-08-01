@@ -17,6 +17,8 @@ Steps:
     HBase
     Sqoop
 
+
+
 Task 1.
 2. Create a RDS instance:
     Database Name: project1db
@@ -25,14 +27,20 @@ Task 1.
 
 3. set up a connection between RDS instance and EC2
 
-4. Connect to RDS from your EMR instance using command:
+4. Download the dataset in EMR
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-01.csv
+wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
+- mv yellow_tripdata_2017-01.csv jan.csv
+- mv yellow_tripdata_2017-02.csv feb.csv
+
+5. Connect to RDS from your EMR instance using command:
     mysql -h demodb.cqsesz6h9yjg.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
 
-5.  show databases; 
+6.  show databases; 
     create database nyctaxi; 
     use nyctaxi;
 
-6. Create table schema in RDS
+7. Create table schema in RDS
 CREATE TABLE taxi_2017 
 (   id                    INT auto_increment PRIMARY KEY, 
     vendorid              INT, 
@@ -57,34 +65,30 @@ CREATE TABLE taxi_2017
 ); 
 show tables;
 
-7. Download the dataset in EMR
-wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-01.csv
-wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-02.csv
 
-8. Connect to RDS : mysql -h demodb.cqsesz6h9yjg.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+8. Load the data in RDS table from the downloaded data.
 
-9. Load the data in RDS table from the downloaded data.
-    use nyctaxi;
-
-    LOAD DATA LOCAL INFILE '/home/hadoop/yellow_tripdata_2017-01.csv'
+    LOAD DATA LOCAL INFILE '/home/hadoop/jan.csv'
     INTO TABLE taxi_2017
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n' 
     IGNORE 1 LINES;
 
-do it also for yellow_tripdata_2017-02.csv
-
+do it also for feb.csv
 # If any warnings in mysql shell, use command  " show warnings; " immediately after running the query that had warnings
 
-10. try a few commands to make sure that your tables have indeed been loaded
+
+9. try a few commands to make sure that your tables have indeed been loaded
 select * from taxi_2017 limit 5;
 select COUNT(*) from taxi_2017;
 Validate this count with the original csv file in your instance: 
     wc -l <file.csv>
 
 
+
+
 Task 2.
-11. Ingest data from RDS to HBase using Sqoop
+10. Ingest data from RDS to HBase using Sqoop
 In HBase shell:
     CREATE 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
 
@@ -139,13 +143,27 @@ sqoop import \
 # Implement null handling accordingly in the sqoop commands
 
 
+
 Task 3. Install Happybase in EMR
+
 Bulk import data from next two files in the dataset on your EMR cluster to your HBase Table using the relevant happybase codes.
 Note: For the above task 3, you just need to import data from the subsequent 2 csv files (i.e. yellow_tripdata_2017-03.csv
 & yellow_tripdata_2017-04.csv) on your EMR cluster.
 
+- mkdir hbase
+- cd hbase
+- wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-03.csv
+- wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-04.csv
+- mv yellow_tripdata_2017-03.csv march.csv
+- mv yellow_tripdata_2017-04.csv april.csv
+- vi batch_insert.py
+- Run the batch_insert.py in /home/hadoop/hbase
 
-Task 4. Install MRJob in EMR : pip install mrjob
+
+Task 4. Install MRJob in EMR : 
+- pip install mrjob
+- mv /home/hadoop/{jan.csv,feb.csv} /home/hadoop/mrtasks/input
+- mv /home/hadoop/hbase/{march.csv,april.csv} /home/hadoop/mrtasks/input
 Use Hadoop runner as file size is large
 MapReduce Tasks: task_a to task_f
 Use all locally downloaded files as input

@@ -45,7 +45,7 @@ def batch_insert_data(filename):
             i+=1
 
     file.close()
-    print("batch insert done")
+    print("batch insert done, {} lines inserted".format(i))
     close_connection()
 
 
