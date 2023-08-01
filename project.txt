@@ -27,16 +27,13 @@ Steps:
 
 
 Task 1.
-2. Create a RDS instance:
+2. Create a RDS instance: 
     Database Name: project1db
     User: admin
     Password: project123
 
 3. set up a connection between RDS instance and EC2
 
-4. Download the dataset in EMR
-- mv yellow_tripdata_2017-01.csv jan.csv
-- mv yellow_tripdata_2017-02.csv feb.csv
 
 5. Connect to RDS from your EMR instance using command:
     mysql -h demodb.cqsesz6h9yjg.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
@@ -46,8 +43,7 @@ Task 1.
     use nyctaxi;
 
 7. Create table schema in RDS
-CREATE TABLE taxi_2017 
-(   id                    INT auto_increment PRIMARY KEY, 
+CREATE TABLE taxi_2017 (
     vendorid              INT, 
     pickup_time           DATETIME, 
     dropoff_time          DATETIME, 
@@ -79,13 +75,24 @@ show tables;
     LINES TERMINATED BY '\n' 
     IGNORE 1 LINES;
 
+    LOAD DATA LOCAL INFILE '/home/hadoop/feb.csv'
+    INTO TABLE taxi_2017
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n' 
+    IGNORE 1 LINES;
+
 do it also for feb.csv
 # If any warnings in mysql shell, use command  " show warnings; " immediately after running the query that had warnings
+
+- add auto incrementing PK to table
+ALTER TABLE taxi_2017
+ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY;
 
 
 9. try a few commands to make sure that your tables have indeed been loaded
 select * from taxi_2017 limit 5;
 select COUNT(*) from taxi_2017;
+
 Validate this count with the original csv file in your instance: 
     wc -l jan.csv
     wc -l feb.csv
@@ -96,7 +103,7 @@ Validate this count with the original csv file in your instance:
 Task 2.
 10. Ingest data from RDS to HBase using Sqoop
 In HBase shell:
-    CREATE 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
+    create 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
 
     trip_info : (11 cols)
         id int Primary key,
@@ -121,6 +128,8 @@ In HBase shell:
         total_amount float, 
         congestion_surcharge float,
         airport_fee float
+
+- Install mysql connector and setup sqoop
 
 sqoop import \
 --connect jdbc:mysql://your_rds_endpoint:your_rds_port/nyctaxi \
