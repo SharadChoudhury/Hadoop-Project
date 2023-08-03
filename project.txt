@@ -33,15 +33,15 @@ Task 1.
 3. set up a connection between RDS instance and EC2
 
 
-5. Connect to RDS from your EMR instance using command:
+4. Connect to RDS from your EMR instance using command:
     mysql -h rds_endpoint -P 3306 -u admin -p
 
-6.  show databases; 
+5.  show databases; 
     create database nyctaxi; 
     use nyctaxi;
 
 
-7. Create table schema in RDS
+6. Create table schema in RDS
 CREATE TABLE taxi_2017 (
     VendorID              INT, 
     tpep_pickup_datetime  DATETIME, 
@@ -66,7 +66,7 @@ CREATE TABLE taxi_2017 (
 show tables;
 
 
-8. Load the data in RDS table from the downloaded data.
+7. Load the data in RDS table from the downloaded data.
 
     LOAD DATA LOCAL INFILE '/home/hadoop/jan.csv'
     INTO TABLE taxi_2017
@@ -82,6 +82,9 @@ show tables;
 
 # If any warnings in mysql shell, use command  " show warnings; " immediately after running the query that had warnings
 
+8. Add an auto incrementing Primary key to the table to use as row_key in Hbase table later on.
+ALTER TABLE taxi_2017
+ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY; 
 
 9. try a few commands to make sure that your tables have indeed been loaded
 select * from taxi_2017 limit 5;
@@ -120,7 +123,7 @@ sqoop import \
 --columns "VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,passenger_count,trip_distance,RatecodeID,store_anfwd_flag,PULocationID,DOLocationID,payment_type" \
 --hbase-table taxidata \
 --column-family trip_info \
---hbase-row-key tpep_pickup_datetime \
+--hbase-row-key id \
 --hbase-create-table \
 --hbase-bulkload
 
@@ -133,7 +136,7 @@ sqoop import \
   --columns "fare_amount,extra,mta_tax,tip_amount,tolls_amount,improvement_surcharge,total_amount,congestion_surcharge,airport_fee" \
   --hbase-table taxidata \
   --column-family fare_info \
-  --hbase-row-key tpep_pickup_datetime \
+  --hbase-row-key id \
   --hbase-bulkload
 
 # Implement null handling accordingly in the sqoop commands
