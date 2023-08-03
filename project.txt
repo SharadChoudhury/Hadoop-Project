@@ -6,14 +6,13 @@ wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-04.csv
 wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-05.csv
 wget https://nyc-tlc-upgrad.s3.amazonaws.com/yellow_tripdata_2017-06.csv
 
+
 mv yellow_tripdata_2017-01.csv jan.csv
 mv yellow_tripdata_2017-02.csv feb.csv
 mv yellow_tripdata_2017-03.csv mar.csv
 mv yellow_tripdata_2017-04.csv apr.csv
 mv yellow_tripdata_2017-05.csv may.csv
 mv yellow_tripdata_2017-06.csv jun.csv
-
-input data is for the year 2017.
 
 
 
@@ -23,7 +22,6 @@ Steps:
     Hadoop
     HBase
     Sqoop
-
 
 
 Task 1.
@@ -36,23 +34,24 @@ Task 1.
 
 
 5. Connect to RDS from your EMR instance using command:
-    mysql -h demodb.cqsesz6h9yjg.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+    mysql -h rds_endpoint -P 3306 -u admin -p
 
 6.  show databases; 
     create database nyctaxi; 
     use nyctaxi;
 
+
 7. Create table schema in RDS
 CREATE TABLE taxi_2017 (
-    vendorid              INT, 
-    pickup_time           DATETIME, 
-    dropoff_time          DATETIME, 
+    VendorID              INT, 
+    tpep_pickup_datetime  DATETIME, 
+    tpep_dropoff_datetime DATETIME, 
     passenger_count       INT, 
     trip_distance         FLOAT, 
-    ratecodeid            INT, 
+    RatecodeID            INT, 
     store_and_fwd_flag    VARCHAR(1), 
-    pulocationid          INT, 
-    dolocationid          INT, 
+    PULocationID          INT, 
+    DOLocationID          INT, 
     payment_type          INT, 
     fare_amount           FLOAT, 
     extra                 FLOAT, 
@@ -81,12 +80,7 @@ show tables;
     LINES TERMINATED BY '\n' 
     IGNORE 1 LINES;
 
-do it also for feb.csv
 # If any warnings in mysql shell, use command  " show warnings; " immediately after running the query that had warnings
-
-- add auto incrementing PK to table
-ALTER TABLE taxi_2017
-ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY;
 
 
 9. try a few commands to make sure that your tables have indeed been loaded
@@ -98,68 +92,63 @@ Validate this count with the original csv file in your instance:
     wc -l feb.csv
 
 
-
+--------------------------------------------------------------------------------------------------
 
 Task 2.
 10. Ingest data from RDS to HBase using Sqoop
+
 In HBase shell:
-    create 'taxi_data', {NAME => 'trip_info'},{NAME => 'fare_info'}
+    create 'taxidata', {NAME => 'trip_info'},{NAME => 'fare_info'}
 
-    trip_info : (11 cols)
-        id int Primary key,
-        VendorID int,
-        pickup_time DATETIME,
-        dropoff_time DATETIME,
-        passenger_count int,
-        trip_distance float,
-        RateCodeID int,
-        store_and_fwd_flag varchar(1),
-        PULocationID int,
-        DOLocationID int,
-        payment_type int
-        
-    fare_info : (9 cols)
-        fare_amount float,
-        extra float,
-        mta_tax float,
-        tip_amount float, 
-        tolls_amount float, 
-        improvement_surcharge float, 
-        total_amount float, 
-        congestion_surcharge float,
-        airport_fee float
 
-- Install mysql connector and setup sqoop
+- Install mysql connector and setup sqoop : 
+sudo -i : first login as root 
+
+wget https://de-mysql-connector.s3.amazonaws.com/mysql-connector-java-8.0.25.tar.gz
+tar -xvf mysql-connector-java-8.0.25.tar.gz
+cd mysql-connector-java-8.0.25/
+sudo cp mysql-connector-java-8.0.25.jar /usr/lib/sqoop/lib/
+cp /usr/lib/hbase/hbase-client.jar /usr/lib/sqoop/lib/
+cp /usr/lib/hbase/hbase-common.jar /usr/lib/sqoop/lib/
+
 
 sqoop import \
---connect jdbc:mysql://your_rds_endpoint:your_rds_port/nyctaxi \
+--connect jdbc:mysql://db3.rds.amazonaws.com:3306/nyctaxi \
 --username admin \
 --password project123 \
 --table taxi_2017 \
---columns "VendorID,pickup_time,dropoff_time,passenger_count,trip_distance,RateCodeID,store_and_fwd_flag,PULocationID,DOLocationID,payment_type" \
---hbase-table taxi_data \
+--columns "VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,passenger_count,trip_distance,RatecodeID,store_anfwd_flag,PULocationID,DOLocationID,payment_type" \
+--hbase-table taxidata \
 --column-family trip_info \
---hbase-row-key id \
+--hbase-row-key tpep_pickup_datetime \
 --hbase-create-table \
 --hbase-bulkload
 
 
 sqoop import \
-  --connect jdbc:mysql://your_rds_endpoint:your_rds_port/nyctaxi \
+  --connect jdbc:mysql://db3.rds.amazonaws.com:3306/nyctaxi \
   --username admin \
   --password project123 \
   --table taxi_2017 \
-  --columns "fare_amount, extra, mta_tax, tip_amount, tolls_amount, improvement_surcharge, total_amount, congestion_surcharge, airport_fee" \
-  --hbase-table taxi_data \
+  --columns "fare_amount,extra,mta_tax,tip_amount,tolls_amount,improvement_surcharge,total_amount,congestion_surcharge,airport_fee" \
+  --hbase-table taxidata \
   --column-family fare_info \
-  --hbase-row-key id \
+  --hbase-row-key tpep_pickup_datetime \
   --hbase-bulkload
 
 # Implement null handling accordingly in the sqoop commands
 
-
+--------------------------------------------------------------------------------------------------------
 
 Task 3. Install Happybase in EMR
+
+sudo -i
+sudo yum update
+yum install gcc
+sudo yum install python3-devel
+pip install happybase
+jps : it should show that Thriftserver is running else use command :  hbase thrift start
+
 
 Bulk import data from next two files in the dataset on your EMR cluster to your HBase Table using the relevant happybase codes.
 Note: For the above task 3, you just need to import data from the subsequent 2 csv files (i.e. yellow_tripdata_2017-03.csv
@@ -172,7 +161,7 @@ Note: For the above task 3, you just need to import data from the subsequent 2 c
 - vi batch_insert.py
 - Run the batch_insert.py in /home/hadoop/hbase
 
-
+-----------------------------------------------------------------------------------------------------------
 
 Task 4. Install MRJob in EMR : 
 - pip install mrjob
@@ -182,30 +171,19 @@ Use all locally downloaded files as input
 
 Use Hadoop runner as file size is large
 MapReduce Tasks: task_a to task_f
+scp -i ~/my-pair1.pem ~/Hadoop-Project/mapreduce/* hadoop@ec2.amazonaws.com:/home/hadoop
+mkdir inputs
+mkdir outputs
+scp -i ~/my-pair1.pem ~/Hadoop-Project/mapreduce/inputs/* hadoop@ec2.compute-1.amazonaws.com:/home/hadoop/inputs
+python mrtask_a.py inputs > outputs/out_a.txt
 
+mv /home/hadoop/* ./inputs
+python mrtask_a.py -r hadoop inputs > outputs_h/out_a.txt
 
+Optional:
+Try storing the inputs in hdfs then running them using the hadoop runner.
 
-
-
-Submission:
-Upload a ZIP file containing the following:
-
-Document-01: A PDF document (RDS.pdf) containing the codes, with the explanations, used for 
-loading the datasets mentioned into an AWS RDS instance. This should have the code along with 
-the screenshots of the EMR instance showing the table creation.
-
-Document-02: A PDF document (Ingestiontask.pdf) containing the code to create the HBase table. 
-The file should also include the Sqoop command to ingest data from RDS into the HBase table. 
-The document should be well commented explaining the code.
-
-The Python code (batch_ingest.py) used to ingest the batch data to the HBase table.
-
-The Python codes used for the MapReduce tasks. The files should be labelled as mrtask_a.py, 
-mrtask_b.py, and so on based on the relevant question number. This scripts should also contain the 
-relevant and proper comments, explaining all the steps taken. 
-Answers to the query and the screenshots of the results of the MapReduce tasks must be 
-included in a separate document (MapReducetasks.pdf) in sequence.
-
+------------------------------------------------------------------------------------------------------------
 
 # optional dashboard task
 Export results of mapreduce tasks from hdfs to rds : Do this for mr tasks c,d,e,f

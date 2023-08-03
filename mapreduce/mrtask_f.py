@@ -10,10 +10,10 @@ class mapreduce(MRJob):
 
     def mapper(self, key, line):
         vals = line.strip().split(',')
-        if vals[0] != 'id':
-            rev = float(vals[11])
+        if vals[0] != 'VendorID':
+            rev = float(vals[10])
             fmt = "%Y-%m-%d %H:%M:%S"
-            triptime = datetime.strptime(vals[2], fmt)
+            triptime = datetime.strptime(vals[1], fmt)
             month = triptime.month
             dayofweek = triptime.weekday()  # returns day of week Monday=0, Sunday=6
             hour = triptime.hour

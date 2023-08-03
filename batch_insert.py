@@ -16,7 +16,8 @@ def close_connection():
 #get the pointer to a table
 def get_table():
     open_connection()
-    table_name = 'taxi_data'
+    print(connection.tables())
+    table_name = 'taxidata'
     table = connection.table(table_name)
     close_connection()
     return table
@@ -36,16 +37,19 @@ def batch_insert_data(filename):
         for line in file:
             if i!=0:
                 temp = line.strip().split(",")
-                for j in range(1,11):
-                    b.put(temp[0], {'trip_info:'+ cols[j] :temp[j] })
-                for k in range(11,20):
-                    b.put(temp[0], {'fare_info:'+ cols[k] :temp[k] })
+                row_key = str(i).encode()  # Encode row key to bytes
+                for j in range(10):
+                    b.put(row_key, {b'trip_info:' + cols[j].encode(): temp[j].encode()})
+                for k in range(10, 19):
+                    b.put(row_key, {b'fare_info:' + cols[k].encode(): temp[k].encode()})
+                print('inserted {}th line'.format(i))
             else:
                 cols = line.strip().split(",")
             i+=1
+    
 
     file.close()
-    print("batch insert done, {} lines inserted".format(i))
+    print("batch insert done, {} lines inserted".format(i-1))
     close_connection()
 
 
