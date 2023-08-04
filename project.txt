@@ -181,15 +181,30 @@ scp -i ~/my-pair1.pem ~/Hadoop-Project/mapreduce/inputs/* hadoop@ec2.compute-1.a
 python mrtask_a.py inputs > outputs/out_a.txt
 
 mv /home/hadoop/* ./inputs
+
+# using hadoop runner
 python mrtask_a.py -r hadoop inputs > outputs_h/out_a.txt
+
+# local testing
+# python mrtask_a.py inputs > outputs/out_a.txt
+
 
 Optional:
 Try storing the inputs in hdfs then running them using the hadoop runner.
+
+python mrtask_a.py -r hadoop hdfs:///user/root/input > out_a.txt
+It takes inputs from hdfs but stores outputs in emr local.
+
+To store both input and output in hdfs:
+python mrtask_a.py -r hadoop hdfs:///user/root/input  --output-dir=hdfs:///user/root/outputs/
+
 
 ------------------------------------------------------------------------------------------------------------
 
 # optional dashboard task
 Export results of mapreduce tasks from hdfs to rds : Do this for mr tasks c,d,e,f
+
+first create a database and all the necessary tables where the outputs will be exported.
 
 sqoop export \
   --connect jdbc:mysql://<RDS_ENDPOINT>:<RDS_PORT>/<DB_NAME> \
@@ -197,4 +212,12 @@ sqoop export \
   --password <RDS_PASSWORD> \
   --table <TABLE_NAME> \
   --export-dir <HDFS_DIRECTORY_PATH> \
+  --input-fields-terminated-by '\t'
+
+sqoop export \
+  --connect jdbc:mysql://database-1.cdnxpt5g8vv4.us-east-1.rds.amazonaws.com:3306/results \
+  --username admin \
+  --password project123 \
+  --table out_a \
+  --export-dir /user/root/outputs/out_a \
   --input-fields-terminated-by '\t'
