@@ -3,7 +3,7 @@
 # for storing outputs in hdfs : use this for powerbi integration activity
 # python mrtask_a.py -r hadoop inputs --output-dir /user/hadoop/outputs/out_a.txt
 
-# storing outputs in emr folder
+# storing outputs in emr folder : This method by default transfers all input files to HDFS in /tmp and then processes them
 # python mrtask_a.py -r hadoop inputs > outputs/out_a.txt
 
 # local testing

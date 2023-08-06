@@ -19,25 +19,38 @@ class mapreduce(MRJob):
             triptime = datetime.strptime(vals[1], fmt)
             # extracting month, day of week and hour from the pickup time after converting it to datetime format
             month = triptime.month
-            dayofweek = triptime.weekday()  # returns day of week Monday=0, Sunday=6
+            dayofweek = triptime.weekday()              # returns day of week Monday=0, Sunday=6
             hour = triptime.hour
-            weekday = 1                 # indicates its weekday or weekend 
-            day = 0                     # indicates its day or night 
-            if dayofweek == 5 or dayofweek == 6:
-                weekday = 0
-            if hour >= 6 and hour <= 18:        # assuming it's day time from 6am to 6pm
-                day = 1
+
+            weekday = "Weekday"                         # indicates its weekday or weekend 
+            day = "Night"                               # indicates its day or night 
+            if dayofweek == 5 or dayofweek == 6:        # saturdays and sundays are weekends
+                weekday = "Weekend"
+            if hour >= 6 and hour <= 18:                # assuming it's day time from 6am to 6pm
+                day = "Day"
             yield (month,weekday,day),(rev,1)
             
+
+    def combiner(self, times, values):
+        # this combiner returns the time in Month,weekend/weekend,day/night and the total trips and total revenue for each partition.
+        trips= 0
+        rev = 0
+        for r,t in values:
+            rev += r
+            trips += t           
+        yield times,(rev,trips)
+    
 
     def reducer(self, times, values):
         # this reducer returns the time in Month,weekend/weekend,day/night and the Avg trip revenue as per the time.
         trips= 0
         rev = 0
         for r,t in values:
-            trips += t
             rev += r
+            trips += t
         yield times, round((rev/trips),2)
+
+    
 
 
 if __name__ == "__main__":
