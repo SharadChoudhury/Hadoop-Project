@@ -9,6 +9,7 @@ class mapreduce(MRJob):
         return [ MRStep(mapper= self.mapper, reducer = self.reducer), 
                 MRStep(reducer = self.sort_results)]
 
+
     def mapper(self, key, line):
         # this mapper returns the payment type and the count
         vals = line.strip().split(',')
@@ -25,8 +26,8 @@ class mapreduce(MRJob):
 
 
     def sort_results(self , key, values):
-        # this reducer will yield the sorted counts corresponding to the payment type
-        yield "Payment type", "Counts"
+        # this reducer will yield the counts sorted by payment type
+        yield "Payment type","Counts"
         for type,cnt in sorted(list(values)):
             yield type,cnt
 

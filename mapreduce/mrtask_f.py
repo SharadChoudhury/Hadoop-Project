@@ -50,7 +50,6 @@ class mapreduce(MRJob):
             trips += t
         yield times, round((rev/trips),2)
 
-    
 
 
 if __name__ == "__main__":

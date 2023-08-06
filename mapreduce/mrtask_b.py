@@ -28,7 +28,7 @@ class mapreduce(MRJob):
         # the reducer will yield the pickup location with the highest revenue
         maxval = max(values, key=lambda x : x[0])
         yield "Pickup location with highest revenue", maxval[1]
-        yield "Revenue", maxval[0]
+        yield "Revenue", round(maxval[0],2)
 
 
 if __name__ == "__main__":

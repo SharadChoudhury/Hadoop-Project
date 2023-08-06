@@ -37,7 +37,7 @@ class mapreduce(MRJob):
         # this reducer receives all tuples of all pickup locations under one key
         # it sorts the values by tip to revenue ratio
         values = sorted(values)
-        yield "Pickup location", "Tip to revenue ratio"
+        yield "Pickup location","Tip to revenue ratio"
         for ratio,loc in values:
             yield loc, round(ratio,2)
 
