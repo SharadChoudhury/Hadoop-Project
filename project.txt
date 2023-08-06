@@ -80,6 +80,20 @@ show tables;
     LINES TERMINATED BY '\n' 
     IGNORE 1 LINES;
 
+
+# Optional : Filling with Nulls for missing values
+    LOAD DATA LOCAL INFILE '/home/hadoop/jan.csv'
+    INTO TABLE taxi_2017
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,passenger_count,trip_distance,RatecodeID,store_and_fwd_flag,PULocationID,DOLocationID,payment_type,fare_amount,extra,mta_tax,tip_amount,tolls_amount,improvement_surcharge,total_amount,@vcongestion_surcharge,@vairport_fee)
+    SET
+    congestion_surcharge = NULLIF(@vcongestion_surcharge,''),
+    airport_fee = NULLIF(@vairport_fee,'')
+    ;
+    
+
 # If any warnings in mysql shell, use command  " show warnings; " immediately after running the query that had warnings
 
 8. Add an auto incrementing Primary key to the table to use as row_key in Hbase table later on.

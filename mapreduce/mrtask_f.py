@@ -9,8 +9,8 @@ from datetime import datetime
 class mapreduce(MRJob):
 
     def mapper(self, key, line):
-        # this mapper returns the time as (Month,dayofweek,hour) and the fare amount and count for each trip
-        # this will give an insight about how many trips and how much revenue is generated from trips by Month,Weekday,Hour
+        # this mapper returns the time as (Month,weekend/weekend,day/night) and the fare amount and count for each trip
+        # this will give an insight about how many trips and how much revenue is generated from trips by Month,weekend/weekend,day/night
         vals = line.strip().split(',')
         if vals[0] != 'VendorID':
             rev = float(vals[10])
@@ -21,11 +21,17 @@ class mapreduce(MRJob):
             month = triptime.month
             dayofweek = triptime.weekday()  # returns day of week Monday=0, Sunday=6
             hour = triptime.hour
-            yield (month,dayofweek,hour),(rev,1)
+            weekday = 1                 # indicates its weekday or weekend 
+            day = 0                     # indicates its day or night 
+            if dayofweek == 5 or dayofweek == 6:
+                weekday = 0
+            if hour >= 6 and hour <= 18:        # assuming it's day time from 6am to 6pm
+                day = 1
+            yield (month,weekday,day),(rev,1)
             
 
     def reducer(self, times, values):
-        # this reducer returns the time in Month,Weekday,Hour and the Avg trip revenue as per the time.
+        # this reducer returns the time in Month,weekend/weekend,day/night and the Avg trip revenue as per the time.
         trips= 0
         rev = 0
         for r,t in values:
