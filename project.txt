@@ -119,8 +119,7 @@ In HBase shell:
 
 
 - Install mysql connector and setup sqoop : 
-sudo -i : first login as root 
-
+sudo -i 
 wget https://de-mysql-connector.s3.amazonaws.com/mysql-connector-java-8.0.25.tar.gz
 tar -xvf mysql-connector-java-8.0.25.tar.gz
 cd mysql-connector-java-8.0.25/
@@ -130,8 +129,9 @@ cp /usr/lib/hbase/hbase-common.jar /usr/lib/sqoop/lib/
 
 
 
-
-# fields separator must be specified, the row key must be included in columns list
+# Very important Note:
+# fields separator must be specified
+# the row key must be included in columns list
 
 sqoop import \
 --connect jdbc:mysql://db1.cdnxpt5g8vv4.us-east-1.rds.amazonaws.com:3306/nyctaxi \

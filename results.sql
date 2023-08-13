@@ -1,4 +1,4 @@
-# commands to create results database in RDS and using that to create PowerBI reports
+-- commands to create results database in RDS and using that to create PowerBI reports
 
 create database results;
 use results;
@@ -8,7 +8,7 @@ create table out_a(
     value float
 );
 
-LOAD DATA LOCAL INFILE '/home/hadoop/task4/outputs/out_a.txt'
+LOAD DATA LOCAL INFILE 'path_to_output_a'
 INTO TABLE out_a
 FIELDS TERMINATED BY '\t'
 LINES TERMINATED BY '\n';
@@ -20,7 +20,7 @@ create table out_b(
     value float
 );
 
-LOAD DATA LOCAL INFILE '/home/hadoop/task4/outputs/out_b.txt'
+LOAD DATA LOCAL INFILE 'path_to_output_b'
 INTO TABLE out_b
 FIELDS TERMINATED BY '\t'
 LINES TERMINATED BY '\n';
@@ -32,7 +32,7 @@ create table out_c(
     value int
 );
 
-LOAD DATA LOCAL INFILE '/home/hadoop/task4/outputs/out_c.txt'
+LOAD DATA LOCAL INFILE 'path_to_output_c'
 INTO TABLE out_c
 FIELDS TERMINATED BY '\t'
 LINES TERMINATED BY '\n'
@@ -45,7 +45,7 @@ create table out_d(
     value float
 );
 
-LOAD DATA LOCAL INFILE '/home/hadoop/task4/outputs/out_d.txt'
+LOAD DATA LOCAL INFILE 'path_to_output_d'
 INTO TABLE out_d
 FIELDS TERMINATED BY '\t'
 LINES TERMINATED BY '\n';
@@ -57,7 +57,7 @@ create table out_e(
     value float
 );
 
-LOAD DATA LOCAL INFILE '/home/hadoop/task4/outputs/out_e.txt'
+LOAD DATA LOCAL INFILE 'path_to_output_e'
 INTO TABLE out_e
 FIELDS TERMINATED BY '\t'
 LINES TERMINATED BY '\n'
@@ -72,7 +72,7 @@ CREATE TABLE out_f(
     Revenue float
 );
 
-LOAD DATA LOCAL INFILE '/home/hadoop/task4/outputs/transformed_f.txt'
+LOAD DATA LOCAL INFILE 'path_to_output_f_transformed'
 INTO TABLE out_f
 FIELDS TERMINATED BY '\t'
 LINES TERMINATED BY '\n';
