@@ -11,6 +11,6 @@ def transform(file):
 
 
 if __name__ == "__main__":
-    infile = open('/home/hadoop/task4/outputs/out_f.txt')
+    infile = open('outputs/out_f.txt')
     transform(infile)
 
