@@ -4,6 +4,10 @@
 
 This repository contains the steps and code to perform ETL (Extract, Transform, Load) on NYC taxi data from the year 2017. The dataset is available for download and the process involves setting up the necessary infrastructure, importing data into a relational database, and then processing the data for analysis.
 
+# Tools Required
+1. AWS subscription for access to RDS, EMR.
+2. Python 
+
 ## Data Source
 
 The data set for this project can be downloaded from the following links:
@@ -19,7 +23,7 @@ The data set for this project can be downloaded from the following links:
 
 ### Step 1: Infrastructure Setup
 
-1. Create an EMR instance `m4.xlarge` with 20GB storage and the following services:
+1. Create an AWS EMR instance `m4.xlarge` with 20GB storage and the following services:
     - Hadoop
     - HBase
     - Sqoop
@@ -46,7 +50,7 @@ mv yellow_tripdata_2017-06.csv jun.csv
 
 ### Step 2: RDS Setup
 
-1. Create an RDS instance with Mysql database.
+1. Create an RDS instance with MySQL database.
 
 2. Set up a connection between the RDS and EC2 instance (EMR master node).
 
@@ -61,7 +65,7 @@ mysql -h your_rds_endpoint -P 3306 -u admin -p
    use nyctaxi;
    ```
 
-5. Create the table schema in RDS:
+5. Create the table schema for taxi datasets:
     ```sql
     CREATE TABLE taxi_2017 (
         VendorID              INT, 
@@ -84,7 +88,7 @@ mysql -h your_rds_endpoint -P 3306 -u admin -p
         congestion_surcharge  FLOAT, 
         airport_fee           FLOAT 
     );
-    show tables;
+    desc taxi_2017;
     ```
 
 6. Load the data into the RDS table from the downloaded CSV files:
@@ -101,7 +105,6 @@ mysql -h your_rds_endpoint -P 3306 -u admin -p
    LINES TERMINATED BY '\n' 
    IGNORE 1 LINES;
 
-   -- Repeat the above two lines for other months
    ```
 
 7. Add an auto incrementing Primary key to the table to use as row_key in Hbase table later on.
@@ -128,7 +131,13 @@ cd mysql-connector-java-8.0.25/
 sudo cp mysql-connector-java-8.0.25.jar /usr/lib/sqoop/lib/
 ```
 
-2. Ingest data from RDS to HBase using Sqoop: 
+2. In HBase shell, create the Hbase table :
+```sql
+create 'taxidata', {NAME => 'trip_info'},{NAME => 'fare_info'}
+```
+
+
+3. Ingest data from RDS to HBase using Sqoop: 
 
 ```shell
 # Import trip_info columns
@@ -140,7 +149,6 @@ sqoop import \
 --columns "id,VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,passenger_count,trip_distance,RatecodeID,store_and_fwd_flag,PULocationID,DOLocationID,payment_type" \
 --hbase-table taxidata --column-family trip_info \
 --hbase-row-key id \
---hbase-create-table \
 --fields-terminated-by '|' \
 -m 8
 
@@ -153,7 +161,6 @@ sqoop import \
 --columns "id,fare_amount,extra,mta_tax,tip_amount,tolls_amount,improvement_surcharge,total_amount,congestion_surcharge,airport_fee" \
 --hbase-table taxidata --column-family fare_info \
 --hbase-row-key id \
---hbase-create-table \
 --fields-terminated-by '|' \
 -m 8
 ```
@@ -194,7 +201,7 @@ python mrtask_a.py -r hadoop path_to_input_data_folder > path_to_output_folder/o
 
 2. Run the ```transform.py``` file to transform the output of mrtask_f.
 
-2. Create the necessary tables in RDS for exporting results.
+2. Create the necessary tables in RDS for exporting results. Run the results.sql file to create the necessary tables for outputs of mapreduce tasks.
 ```sql
 source /home/hadoop/results.sql
 ```
@@ -204,7 +211,7 @@ source /home/hadoop/results.sql
 
 ## Conclusion
 
-This ETL project demonstrates the process of extracting, transforming, and loading NYC taxi data for analysis. The infrastructure setup, data ingestion into RDS and HBase, MapReduce processing, and optional result exporting to RDS are covered in this project.
+This ETL project demonstrates the process of extracting, transforming, and loading NYC taxi data for analysis. The infrastructure setup, data ingestion into RDS and into HBase using Sqoop, MapReduce processing and exporting results to RDS are covered in this project.
 
 ## Note
 
