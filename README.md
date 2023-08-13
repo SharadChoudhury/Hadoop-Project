@@ -21,7 +21,7 @@ The data set for this project can be downloaded from the following links:
 
 ## Steps
 
-### Step 1: Infrastructure Setup
+### Step 1: EMR Setup
 
 1. Create an AWS EMR instance `m4.xlarge` with 20GB storage and the following services:
     - Hadoop
@@ -165,6 +165,8 @@ sqoop import \
 -m 8
 ```
 
+![Ingesting from RDS to habse using Sqoop](./assets/task1.png)
+
 
 ### Step 4: Happybase Installation and Bulk Import
 
@@ -207,6 +209,8 @@ source /home/hadoop/results.sql
 ```
 
 3. Create Reports in PowerBI by connecting to the Results database in RDS.
+
+![Analyse using mapreduce](./assets/task2.png)
 
 
 ## Conclusion
